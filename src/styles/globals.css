@@ -1,0 +1,334 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans:
+    "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-ivory: #faf6ef;
+  --color-paper: #ffffff;
+  --color-parchment: #f4ecdf;
+  --color-cream: #e9d7b9;
+  --color-cream-deep: #dcc6a2;
+
+  --color-espresso: #38251d;
+  --color-coffee: #70452f;
+  --color-caramel: #c58b52;
+  --color-mocha: #88796d;
+  --color-line: #eae1d5;
+
+  --color-sage: #78866b;
+  --color-sage-deep: #5c6851;
+  --color-terracotta: #b86b4b;
+  --color-biscuit: #e8cfa9;
+  --color-mint: #dde5d6;
+
+  --shadow-card: 0 1px 2px rgba(56, 37, 29, 0.04), 0 14px 34px -24px rgba(56, 37, 29, 0.22);
+  --shadow-lift: 0 2px 4px rgba(56, 37, 29, 0.05), 0 22px 50px -26px rgba(56, 37, 29, 0.32);
+  --shadow-float: 0 24px 60px -20px rgba(56, 37, 29, 0.4);
+
+  --radius-card: 1.25rem;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    background: var(--color-ivory);
+  }
+
+  body {
+    @apply bg-ivory font-sans text-espresso antialiased;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    font-optical-sizing: auto;
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-caramel);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-cream);
+    color: var(--color-espresso);
+  }
+
+  input[type="date"] {
+    min-height: 2.75rem;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .amount {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "cv11" 1;
+    letter-spacing: -0.025em;
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-bottom-space {
+    padding-bottom: calc(6.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .hairline {
+    border-color: color-mix(in srgb, var(--color-line) 82%, transparent);
+  }
+
+  .paper-grain {
+    background-image: radial-gradient(
+      circle at 20% 0%,
+      rgba(197, 139, 82, 0.1),
+      transparent 45%
+    );
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes steam-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(4px) scaleY(0.9);
+  }
+  35% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) scaleY(1.08);
+  }
+}
+
+@keyframes gentle-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.page-enter {
+  animation: page-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.steam-line {
+  animation: steam-rise 2.6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.soft-pulse {
+  animation: gentle-pulse 1.8s ease-in-out infinite;
+}
+
+/* Radix dialog panels */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(56, 37, 29, 0.34);
+  backdrop-filter: blur(3px);
+  animation: overlay-in 0.18s ease-out;
+}
+
+.dialog-panel {
+  position: fixed;
+  z-index: 61;
+  inset-inline: 0;
+  bottom: 0;
+  max-height: 92dvh;
+  overflow-y: auto;
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  background: var(--color-ivory);
+  box-shadow: var(--shadow-float);
+  animation: sheet-up 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes alert-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -47%) scale(0.975);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.alert-panel {
+  position: fixed;
+  z-index: 61;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(calc(100vw - 2rem), 26rem);
+  max-height: 90dvh;
+  overflow-y: auto;
+  border-radius: 1.5rem;
+  background: var(--color-ivory);
+  box-shadow: var(--shadow-float);
+  animation: alert-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (min-width: 640px) {
+  .dialog-panel {
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(calc(100vw - 3rem), 34rem);
+    border-radius: 1.5rem;
+    animation: dialog-in 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Sonner toast in café colours */
+[data-sonner-toaster] {
+  --normal-bg: #38251d;
+  --normal-text: #faf6ef;
+  --normal-border: transparent;
+  --border-radius: 14px;
+  font-family: var(--font-sans);
+}
+
+[data-sonner-toast] {
+  box-shadow: 0 18px 40px -16px rgba(56, 37, 29, 0.45);
+}
+
+[data-sonner-toast] [data-button] {
+  color: var(--color-cream);
+  background: rgba(250, 246, 239, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+}
