@@ -71,23 +71,38 @@ export default defineConfig({
   build: {
     target: "es2022",
     cssCodeSplit: true,
-    rolldownOptions: {
+    rollupOptions: {
       output: {
-        advancedChunks: {
-          groups: [
-            {
-              name: "vendor-react",
-              test: /node_modules[\\/](react|react-dom|react-router|react-router-dom|@tanstack[\\/]react-query)[\\/]/,
-            },
-            {
-              name: "vendor-motion",
-              test: /node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/,
-            },
-            {
-              name: "vendor-ui",
-              test: /node_modules[\\/](@radix-ui|lucide-react|class-variance-authority|tailwind-merge|clsx|sonner)[\\/]/,
-            },
-          ],
+        manualChunks(id: string) {
+          if (!id.includes("node_modules")) return;
+          if (
+            id.includes("node_modules/react/") ||
+            id.includes("node_modules/react-dom/") ||
+            id.includes("node_modules/react-router/") ||
+            id.includes("node_modules/react-router-dom/") ||
+            id.includes("node_modules/@tanstack/")
+          ) {
+            return "vendor-react";
+          }
+          if (id.includes("framer-motion") || id.includes("motion-dom") || id.includes("motion-utils")) {
+            return "vendor-motion";
+          }
+          if (id.includes("recharts") || id.includes("d3-") || id.includes("victory-vendor")) {
+            return "vendor-charts";
+          }
+          if (id.includes("xlsx")) {
+            return "vendor-xlsx";
+          }
+          if (
+            id.includes("@radix-ui") ||
+            id.includes("lucide-react") ||
+            id.includes("class-variance-authority") ||
+            id.includes("tailwind-merge") ||
+            id.includes("clsx") ||
+            id.includes("sonner")
+          ) {
+            return "vendor-ui";
+          }
         },
       },
     },

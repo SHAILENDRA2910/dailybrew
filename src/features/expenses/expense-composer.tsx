@@ -157,10 +157,19 @@ export function ExpenseComposer({
     [categories, activeItems],
   );
 
-  const usuals = useMemo(
-    () => activeItems.filter((item) => (frequency.get(item.id) ?? 0) > 0).slice(0, 3),
-    [activeItems, frequency],
-  );
+  const usuals = useMemo(() => {
+    const frequent = activeItems.filter((item) => (frequency.get(item.id) ?? 0) > 0);
+    if (frequent.length >= 3) return frequent.slice(0, 3);
+    const seen = new Set(frequent.map((item) => item.id));
+    const combined = [...frequent];
+    for (const item of activeItems) {
+      if (!seen.has(item.id)) {
+        combined.push(item);
+        if (combined.length === 3) break;
+      }
+    }
+    return combined;
+  }, [activeItems, frequency]);
 
   const filteredItems = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -539,39 +548,55 @@ export function ExpenseComposer({
               </Button>
             </div>
 
-            {usuals.length > 0 && lines.length === 0 ? (
+            {usuals.length > 0 ? (
               <div className="mt-4 rounded-xl border border-cream-deep/50 bg-[#FDF9F2] p-3">
                 <div className="flex items-baseline justify-between gap-2 px-0.5">
-                  <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-mocha">
-                    Your usuals
-                  </p>
-                  <p className="text-[9.5px] text-mocha">Tap, then save</p>
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="size-3 text-coffee" aria-hidden="true" />
+                    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-mocha">
+                      One-tap usuals
+                    </p>
+                  </div>
+                  <p className="text-[9.5px] text-mocha">Tap to add or increase quantity</p>
                 </div>
                 <div className="mt-2 grid grid-cols-3 gap-2">
-                  {usuals.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => addItem(item)}
-                      className="flex min-h-12 items-center gap-1.5 rounded-xl border border-line bg-white px-2 py-1.5 text-left transition-colors hover:border-cream-deep active:scale-[0.98]"
-                      aria-label={`Add your usual ${item.name} at ${formatRate(item.default_rate, currency)}`}
-                    >
-                      <span
-                        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-parchment text-coffee"
-                        aria-hidden="true"
+                  {usuals.map((item) => {
+                    const currentQty = quantityByItem.get(item.id) ?? 0;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => addItem(item)}
+                        className={cn(
+                          "flex min-h-12 items-center gap-1.5 rounded-xl border px-2 py-1.5 text-left transition-all active:scale-[0.98]",
+                          currentQty > 0
+                            ? "border-coffee/40 bg-parchment/60 ring-1 ring-coffee/20 shadow-xs"
+                            : "border-line bg-white hover:border-cream-deep",
+                        )}
+                        aria-label={`Add ${item.name} at ${formatRate(item.default_rate, currency)}${currentQty > 0 ? `, currently ${currentQty}` : ""}`}
                       >
-                        <Plus className="size-3" />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[11px] font-medium leading-tight text-espresso">
-                          {item.name}
+                        <span
+                          className={cn(
+                            "flex size-6 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
+                            currentQty > 0
+                              ? "bg-coffee text-white"
+                              : "bg-parchment text-coffee",
+                          )}
+                          aria-hidden="true"
+                        >
+                          {currentQty > 0 ? currentQty : <Plus className="size-3" />}
                         </span>
-                        <span className="amount mt-0.5 block text-[9.5px] text-mocha">
-                          {formatRate(item.default_rate, currency)}
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[11px] font-medium leading-tight text-espresso">
+                            {item.name}
+                          </span>
+                          <span className="amount mt-0.5 block text-[9.5px] text-mocha">
+                            {formatRate(item.default_rate, currency)}
+                          </span>
                         </span>
-                      </span>
-                    </button>
-                  ))}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ) : null}
